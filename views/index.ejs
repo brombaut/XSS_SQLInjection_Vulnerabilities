@@ -3,6 +3,14 @@
 <head>
   <meta charset="utf-8">
   <title>User page</title>
+  <script>
+    if (!localStorage.getItem('user')) {
+      window.location.replace("http://127.0.0.1:3000/login");
+    }
+  </script>
+  <style>
+  
+  </style>
 </head>
 <body>
   <h1>Users</h1>
@@ -13,7 +21,7 @@
   </ul>
 
 <script>
-  console.log(JSON.parse(document.cookie));
+
 </script>
 </body>
 </html> 

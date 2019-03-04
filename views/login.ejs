@@ -3,16 +3,166 @@
 <head>
   <meta charset="utf-8">
   <title>Login - CS4417 Message Board</title>
+  <style>
+    html,
+    body {
+      background: linear-gradient(0.33turn, #87c1ff, #51a5ff);;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    #login-container {
+      background-color: white;
+      padding: 24px 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 4px;
+      -webkit-box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.5);
+      -moz-box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.5);
+      box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.5);
+    }
+
+    #login-container > h2 {
+      color: black;
+    }
+    
+    #login-container > h3 {
+      color: black;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    form > input[type="text"],
+    form > input[type="password"] {
+      width: calc(100% - 24px);
+      margin: 8px 12px;
+      font-size: 1.2rem;
+      padding: 8px;
+      background-color: rgba(229, 229, 229, 0.5);
+    }
+
+    form > button {
+      background: #51a5ff;
+      margin-top: 16px;
+      padding: 8px 12px;
+      font-size: 1.2rem;
+      width: 100%;
+      border-radius: 6px;
+      color: white;
+      font-weight: 600;
+    }
+
+    form > button:hover {
+      background: #87c1ff;
+      cursor: pointer;
+    }
+
+    form > button > .loader {
+      /* TODO: Finish this */
+      border: 16px solid #f3f3f3; /* Light grey */
+      border-top: 16px solid #3498db; /* Blue */
+      border-radius: 50%;
+      /* width: 100%; */
+      height: 100%;
+      animation: spin 2s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #err-msg {
+      color: rgb(235, 39, 39);
+      margin-top: 16px;
+      display: none;
+    }
+
+  </style>
 </head>
 <body>
   <div id="login-container">
     <h2>CS4417 - Message Board</h2>
     <h1>Login</h1>
-    <form action = "http://127.0.0.1:3000/login" method = "POST">
-      Username: <input type = "text" name = "username"> <br>
-      Password: <input type = "password" name = "password"> <br>
-      <input type = "submit" value = "Submit">
+    <form>
+      <input
+        id="username-input"
+        type = "text"
+        name = "username"
+        placeholder="Username">
+      <input
+        id="password-input"
+        type = "password"
+        name = "password"
+        placeholder="Password">
+      <button id="login-button">
+        Login
+        <div class="loader"></div>
+      </button>
     </form>
+    <div id="err-msg">
+      Error Logging In
+    </div>
   </div>
+
+<script>
+  const submitButton = document.querySelector('#login-button');
+  const errMsg = document.querySelector('#err-msg');
+
+  function handleLoginClick(e) {
+    e.preventDefault();
+    // submitButton.disabled = true;
+    const usernameInput = document.querySelector('#username-input');
+    const passwordInput = document.querySelector('#password-input');
+    const usernameText = usernameInput.value;
+    const passwordText = passwordInput.value;
+
+    if (!usernameText || !passwordText) {
+      errMsg.style.display = 'block';
+      return;
+    }
+    errMsg.style.display = 'none';
+
+    const url = 'http://127.0.0.1:3000/login';
+    const data = {
+      username: usernameText,
+      password: passwordText
+    };
+    const params = {
+      headers: {
+        'content-type': 'application/json; charset=UTF-8'
+      },
+      body: JSON.stringify(data),
+      method: 'POST'
+    };
+
+    fetch(url, params)
+      .then((data) =>  {
+        return data.json();
+      })
+      .then((response) => {
+        console.log('res: ', response);
+        localStorage.setItem('user', JSON.stringify(response));
+        window.location = "http://127.0.0.1:3000/";
+      })
+      .catch((err) => {
+        errMsg.style.display = 'block';
+      });
+  }
+
+  submitButton.addEventListener('click', handleLoginClick);
+</script>
 </body>
 </html> 

@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "resetdb": "mysql -u root < ./db/forum_init.sql"
+    "dbinit": "mysql -u root < ./db/forum_init.sql"
   },
   "dependencies": {
     "ejs": "^2.6.1",

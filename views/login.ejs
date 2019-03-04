@@ -6,7 +6,7 @@
   <style>
     html,
     body {
-      background: linear-gradient(0.33turn, #87c1ff, #51a5ff);;
+      background: linear-gradient(0.33turn, #87c1ff, #51a5ff);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -94,7 +94,7 @@
 </head>
 <body>
   <div id="login-container">
-    <h2>CS4417 - Message Board</h2>
+    <h2>CS4417 - Message Forum</h2>
     <h1>Login</h1>
     <form>
       <input
@@ -153,7 +153,6 @@
         return data.json();
       })
       .then((response) => {
-        console.log('res: ', response);
         localStorage.setItem('user', JSON.stringify(response));
         window.location = "http://127.0.0.1:3000/";
       })

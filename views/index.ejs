@@ -9,18 +9,152 @@
     }
   </script>
   <style>
-  
+    html,
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f2f2f2;
+    }
+
+    header {
+      min-height: 60px;
+      width: 100%;
+      background: #51a5ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header > h3 {
+      color: white;
+      font-size: 1.5rem;
+      margin: 0px 16px;
+    }
+
+    header > button {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 400;
+      background: inherit;
+      border: none;
+      height: 100%;
+      margin: 0px 16px;
+    }
+
+    header > button:hover {
+      cursor: pointer;
+      background: #87c1ff;
+    }
+
+    .container {
+      overflow: auto;
+    }
+
+    .container > ul {
+      list-style: none;
+      margin: 0;
+      max-width: 800px;
+    }
+
+    .container > ul > li {
+      display: flex;
+      flex-direction: row;
+      margin: 24px;
+      background: white;
+      padding: 20px 32px;
+      border-radius: 4px;
+      -webkit-box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.4);
+      -moz-box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.4);
+      box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.4);
+    }
+
+    .container > ul > li > .post-author {
+      white-space: nowrap;
+      margin: 4px 8px;
+      flex: 0.2;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .container > ul > li > .post-content {
+      margin: 4px 8px;
+      flex: 0.8;
+    }
+
   </style>
 </head>
 <body>
-  <h1>Users</h1>
-  <ul>
-    <% for (var i = 0; i < users.length; i++) { %>
-    <li> <a href="/user?name=<%= users[i] %>"><%- users[i].first_name %></a> </li>
-    <% } %>
-  </ul>
+  <header>
+    <h3 id="users-name-header">
+    </h3>
+    <h3>
+      CS4417 - Message Forum
+    </h3>
+    <button id="signout-button">
+      Sign Out
+    </button>
+  </header>
+  <div class="container">
+    <ul>
+      <%
+      const sorted = posts.sort((a, b) => {
+        if (a.createdAt > b.createdAt) return 1
+        return -1;
+      });
+      for (var i = 0; i < sorted.length; i++) {
+        const user = users.find(user => user.id === sorted[i].createdBy);
+        const date = new Date(sorted[i].createdAt);
+      %>
+        <li>
+          <div class="post-author">
+            <div>
+              <%- user.first_name + ' ' + user.last_name %>
+            </div>
+            <div>
+              <!--<%- date.getMonth() + ' ' + date.getDate() + ', ' + date.getYear() %> -->
+            </div>
+          </div>
+          <div class="post-content">
+            <%- sorted[i].content %>
+          </div>
+        </li>
+      <% } %>
+    </ul>
+  </div>
 
 <script>
+let users;
+let posts;
+
+fetch('http://127.0.0.1:3000/users')
+  .then(data => data.json())
+  .then(response => users = response)
+  .catch(err => console.log(err));
+
+fetch('http://127.0.0.1:3000/posts')
+  .then(data => data.json())
+  .then(response => posts = response)
+  .catch(err => console.log(err));
+
+const user = JSON.parse(localStorage.getItem('user'));
+const usersNameHeader = document.querySelector('#users-name-header');
+usersNameHeader.innerHTML = `${user.first_name} ${user.last_name}`;
+
+
+function handleSignoutClick() {
+  localStorage.removeItem('user');
+  window.location = 'http://127.0.0.1:3000/login';
+}
+
+document.querySelector('#signout-button').addEventListener('click', handleSignoutClick);
 
 </script>
 </body>

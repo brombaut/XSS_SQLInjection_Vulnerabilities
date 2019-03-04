@@ -21,8 +21,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/', function(request, response) {
+  connection.query('SELECT * FROM posts', function(err, postsRows){
+    connection.query('SELECT * FROM users', function(err, usersRows){
+      response.render('index', { posts: postsRows, users: usersRows});
+    })
+  });
+});
+
+app.get('/users', function(request, response) {
   connection.query('SELECT * FROM users', function(err, rows){
-    response.render('index', {users : rows});
+    response.send(rows);
+  });
+});
+
+app.get('/posts', function(request, response) {
+  connection.query('SELECT * FROM posts', function(err, rows){
+    response.send(rows);
   });
 });
 

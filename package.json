@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "resetdb": "mysql -u root < ./db/forum_init.sql"
+  },
   "dependencies": {
     "ejs": "^2.6.1",
     "express": "^4.16.4",

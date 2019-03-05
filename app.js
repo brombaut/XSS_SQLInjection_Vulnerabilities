@@ -40,6 +40,17 @@ app.get('/posts', function(request, response) {
   });
 });
 
+app.post('/posts', function(request, response) {
+  const contentIn = request.body.content;
+  const createdBy = request.body.createdBy;
+  connection.query(
+    'INSERT INTO posts (content, createdBy) VALUES (?, ?)',
+    [contentIn, createdBy],
+    function(err, result) {
+      response.status(201).send({ status: 'Created' });
+    });
+});
+
 app.get('/login', function(request, response) {
   response.render('login');
 });
@@ -49,12 +60,12 @@ app.post('/login', function(request, response) {
   const passwordIn = request.body.password;
   connection.query('SELECT * FROM users WHERE username = "' + usernameIn + '"', function(err, rows){
     if (rows.length === 0) {
-      response.status(404).send('User not found');
+      response.status(404).send({ status: 'User not found' });
       return;
     }
     const userObj = rows[0];
     if (passwordIn !== userObj.password) {
-      response.status(403).send('Invalid Credentials');
+      response.status(403).send({ status: 'Invalid Credentials' });
       return;
     }
     response.send(userObj);

@@ -2,7 +2,7 @@
 <html>  
 <head>
   <meta charset="utf-8">
-  <title>User page</title>
+  <title>CS4417 - Message Forum</title>
   <script>
     if (!localStorage.getItem('user')) {
       window.location.replace("http://127.0.0.1:3000/login");
@@ -52,16 +52,26 @@
     }
 
     .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       overflow: auto;
     }
 
-    .container > ul {
+    .container > .scroll {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container > .scroll > ul {
       list-style: none;
       margin: 0;
       max-width: 800px;
+      padding: 0;
     }
 
-    .container > ul > li {
+    .container > .scroll > ul > li {
       display: flex;
       flex-direction: row;
       margin: 24px;
@@ -73,7 +83,7 @@
       box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.4);
     }
 
-    .container > ul > li > .post-author {
+    .container > .scroll > ul > li > .post-author {
       white-space: nowrap;
       margin: 4px 8px;
       flex: 0.2;
@@ -84,9 +94,50 @@
       align-items: center;
     }
 
-    .container > ul > li > .post-content {
+    .container > .scroll > ul > li > .post-content {
       margin: 4px 8px;
       flex: 0.8;
+    }
+
+    .container > .scroll > .add-container {
+      width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 8px;
+      min-height: 100px;
+    }
+
+    .container > .scroll > .add-container > textarea {
+      width: calc(100% - 48px - 16px);
+      resize: vertical;
+      padding: 8px;
+      font-size: 1.2rem;
+      min-height: 1.2rem;
+    }
+
+    .container > .scroll > .add-container > button {
+      align-self: flex-end;
+      margin-right: 24px;
+      margin-top: 8px;
+      background: #51a5ff;
+      padding: 8px 12px;
+      font-size: 1.2rem;
+      border-radius: 6px;
+      color: white;
+      font-weight: 600;
+      min-height: 40px;
+    }
+
+    .container > .scroll > .add-container > button:hover {
+      cursor: pointer;
+      background: #87c1ff;
+    }
+
+    .container > .scroll > #err-msg {
+      color: rgb(235, 39, 39);
+      margin-top: 16px;
+      display: none;
     }
 
   </style>
@@ -103,33 +154,43 @@
     </button>
   </header>
   <div class="container">
-    <ul>
-      <%
-      const sorted = posts.sort((a, b) => {
-        if (a.createdAt > b.createdAt) return 1
-        return -1;
-      });
-      for (var i = 0; i < sorted.length; i++) {
-        const user = users.find(user => user.id === sorted[i].createdBy);
-        const date = new Date(sorted[i].createdAt);
-      %>
-        <li>
-          <div class="post-author">
-            <div>
-              <%- user.first_name + ' ' + user.last_name %>
+    <div class="scroll">
+      <ul id="posts-list">
+        <%
+        const sorted = posts.sort((a, b) => {
+          if (a.id < b.id) return -1
+          return 1;
+        });
+        for (var i = 0; i < sorted.length; i++) {
+          const user = users.find(user => user.id === sorted[i].createdBy);
+          const date = new Date(sorted[i].createdAt);
+        %>
+          <li>
+            <div class="post-author">
+              <div>
+                <%- user.first_name + ' ' + user.last_name %>
+              </div>
+              <div>
+                <!--<%- date.getMonth() + ' ' + date.getDate() + ', ' + date.getYear() %> -->
+              </div>
             </div>
-            <div>
-              <!--<%- date.getMonth() + ' ' + date.getDate() + ', ' + date.getYear() %> -->
+            <div class="post-content">
+              <%- sorted[i].content %>
             </div>
-          </div>
-          <div class="post-content">
-            <%- sorted[i].content %>
-          </div>
-        </li>
-      <% } %>
-    </ul>
+          </li>
+        <% } %>
+      </ul>
+      <div class="add-container">
+        <textarea id="post-text-area"></textarea>
+        <button id="post-button">
+          Post
+        </button>
+      </div>
+      <div id="err-msg">
+        Error Creating Post
+      </div>
+    </div>
   </div>
-
 <script>
 let users;
 let posts;
@@ -152,9 +213,63 @@ usersNameHeader.innerHTML = `${user.first_name} ${user.last_name}`;
 function handleSignoutClick() {
   localStorage.removeItem('user');
   window.location = 'http://127.0.0.1:3000/login';
-}
+};
+
+function addPost() {
+  const errMsg = document.querySelector('#err-msg');
+  const user = JSON.parse(localStorage.getItem('user'));
+  const contentTextarea = document.querySelector('#post-text-area');
+  
+  if (!contentTextarea.value) {
+    errMsg.style.display = 'block';
+    return;
+  }
+  errMsg.style.display = 'none';
+
+  const url = 'http://127.0.0.1:3000/posts';
+  const data = {
+    content: contentTextarea.value,
+    createdBy: user.id,
+  };
+  const params = {
+    headers: {
+      'content-type': 'application/json; charset=UTF-8'
+    },
+    body: JSON.stringify(data),
+    method: 'POST'
+  };
+
+  fetch(url, params)
+    .then((data) =>  {
+      return data.json();
+    })
+    .then((response) => {
+      const list = document.querySelector('#posts-list');
+      const newPostLI = document.createElement("LI");
+      newPostLI.innerHTML = `
+        <div class="post-author">
+          <div>
+            ${user.first_name} ${user.last_name}
+          </div>
+          <div>
+          </div>
+        </div>
+        <div class="post-content">
+          ${contentTextarea.value}
+        </div>
+      `;
+      list.appendChild(newPostLI);   
+      contentTextarea.value = '';
+    })
+    .catch((err) => {
+      errMsg.style.display = 'block';
+    });
+
+
+};
 
 document.querySelector('#signout-button').addEventListener('click', handleSignoutClick);
+document.querySelector('#post-button').addEventListener('click', addPost);
 
 </script>
 </body>

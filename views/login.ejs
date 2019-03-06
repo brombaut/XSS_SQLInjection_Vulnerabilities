@@ -153,8 +153,12 @@
         return data.json();
       })
       .then((response) => {
-        localStorage.setItem('user', JSON.stringify(response));
-        window.location = "http://127.0.0.1:3000/";
+        if (response.msg) {
+          errMsg.style.display = 'block';
+        } else {
+          localStorage.setItem('user', JSON.stringify(response));
+          window.location = "http://127.0.0.1:3000/";
+        }
       })
       .catch((err) => {
         errMsg.style.display = 'block';

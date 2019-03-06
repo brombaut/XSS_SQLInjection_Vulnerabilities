@@ -36,7 +36,11 @@
       margin: 0px 16px;
     }
 
-    header > button {
+    header > div {
+      height: 100%;
+    }
+
+    header button {
       color: white;
       font-size: 1.5rem;
       font-weight: 400;
@@ -46,7 +50,7 @@
       margin: 0px 16px;
     }
 
-    header > button:hover {
+    header button:hover {
       cursor: pointer;
       background: #87c1ff;
     }
@@ -149,9 +153,14 @@
     <h3>
       CS4417 - Message Forum
     </h3>
-    <button id="signout-button">
-      Sign Out
-    </button>
+    <div>
+      <button id="search-posts-button">
+        Search Posts
+      </button>
+      <button id="signout-button">
+        Sign Out
+      </button>
+    </div>
   </header>
   <div class="container">
     <div class="scroll">
@@ -215,6 +224,10 @@ function handleSignoutClick() {
   window.location = 'http://127.0.0.1:3000/login';
 };
 
+function handleSearchPostsClick() {
+  window.location = 'http://127.0.0.1:3000/search';
+};
+
 function addPost() {
   const errMsg = document.querySelector('#err-msg');
   const user = JSON.parse(localStorage.getItem('user'));
@@ -264,11 +277,10 @@ function addPost() {
     .catch((err) => {
       errMsg.style.display = 'block';
     });
-
-
 };
 
 document.querySelector('#signout-button').addEventListener('click', handleSignoutClick);
+document.querySelector('#search-posts-button').addEventListener('click', handleSearchPostsClick);
 document.querySelector('#post-button').addEventListener('click', addPost);
 
 </script>

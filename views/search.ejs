@@ -1,0 +1,205 @@
+<!DOCTYPE html>  
+<html>  
+<head>
+  <meta charset="utf-8">
+  <title>CS4417 - Message Forum</title>
+  <script>
+    if (!localStorage.getItem('user')) {
+      window.location.replace("http://127.0.0.1:3000/login");
+    }
+  </script>
+  <style>
+    html,
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f2f2f2;
+    }
+
+    header {
+      min-height: 60px;
+      width: 100%;
+      background: #51a5ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header > h3 {
+      color: white;
+      font-size: 1.5rem;
+      margin: 0px 16px;
+    }
+
+    header > div {
+      height: 100%;
+    }
+
+    header button {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 400;
+      background: inherit;
+      border: none;
+      height: 100%;
+      margin: 0px 16px;
+    }
+
+    header button:hover {
+      cursor: pointer;
+      background: #87c1ff;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: auto;
+    }
+
+    .container > .scroll {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container > .scroll > .search-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 800px;
+      margin: 16px;
+    }
+    
+    .container > .scroll > .search-container > input {
+      flex: 1;
+      margin: 0px 8px;
+      font-size: 1.1rem;
+    }
+
+    .container > .scroll > .search-container > button {
+      height: 100%;
+    }
+
+    .container > .scroll > table {
+      width: 800px;
+    }
+
+    table {
+      border: 1px solid black;
+    }
+
+    td {
+      margin: 4px 8px;
+      border: 1px solid black;
+      padding: 16px;
+    }
+
+    td:nth-child(2) {
+      white-space: nowrap;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h3 id="users-name-header">
+    </h3>
+    <h3>
+      CS4417 - Message Forum
+    </h3>
+    <div>
+      <button id="all-posts-button">
+        All Posts
+      </button>
+      <button id="signout-button">
+        Sign Out
+      </button>
+    </div>
+  </header>
+  <div class="container">
+    <div class="scroll">
+      <div class="search-container">
+        <span>Search posts: </span>
+        <input type="test" id="search-input"/>
+        <button id="search-button">Search</button>
+      </div>
+      <table id="posts-table">
+      </table>
+    </div>
+  </div>
+<script>
+let users;
+let posts;
+
+fetch('http://127.0.0.1:3000/users')
+  .then(data => data.json())
+  .then(response => users = response)
+  .catch(err => console.log(err));
+
+const user = JSON.parse(localStorage.getItem('user'));
+const usersNameHeader = document.querySelector('#users-name-header');
+usersNameHeader.innerHTML = `${user.first_name} ${user.last_name}`;
+
+
+function handleSignoutClick() {
+  localStorage.removeItem('user');
+  window.location = 'http://127.0.0.1:3000/login';
+};
+
+function handleAllPostsClick() {
+  window.location = 'http://127.0.0.1:3000/';
+};
+
+function handleSearchForPosts() {
+  const searchEl = document.querySelector('#search-input');
+  const searchVal = searchEl.value;
+  const url = `http://127.0.0.1:3000/posts/${searchVal}`;
+  fetch(url).then((data) => {
+    return data.json();
+  }).then((response) => {
+    const tableEl = document.querySelector('#posts-table');
+    let innerHTML = `
+      <tr>
+        <th>ID</th>
+        <th>Author</th>
+        <th>Content</th>
+      </tr>
+    `;
+    response.forEach((item) => {
+      innerHTML += '<tr>';
+        for (var i in item) {
+          if (item.hasOwnProperty(i)) {
+            if (i === 'createdBy') {
+              const user = users.find(user => user.id === item[i]);
+              if (user) {
+                innerHTML += `<td>${user.first_name} ${user.last_name}</td>`;
+              } else {
+                innerHTML += `<td>${item[i]}</td>`;
+              }
+            } else {
+              innerHTML += `<td>${item[i]}</td>`;
+            }
+          }
+        }
+      innerHTML += '</tr>';
+    });
+    tableEl.innerHTML = innerHTML;
+  }).catch((err) => {
+    console.log(err);
+  });
+};
+
+document.querySelector('#signout-button').addEventListener('click', handleSignoutClick);
+document.querySelector('#all-posts-button').addEventListener('click', handleAllPostsClick);
+document.querySelector('#search-button').addEventListener('click', handleSearchForPosts);
+
+
+</script>
+</body>
+</html> 

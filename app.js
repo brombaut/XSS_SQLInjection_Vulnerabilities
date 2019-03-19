@@ -20,6 +20,10 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+
+
+
 app.get('/', function(request, response) {
   connection.query('SELECT * FROM posts', function(err, postsRows){
     connection.query('SELECT * FROM users', function(err, usersRows){
@@ -27,6 +31,10 @@ app.get('/', function(request, response) {
     })
   });
 });
+
+
+
+
 
 app.get('/search', function(request, response) {
   response.render('search');

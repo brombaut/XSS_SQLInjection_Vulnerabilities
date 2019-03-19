@@ -22,7 +22,7 @@ Eample code to embed
 
 Object.keys(localStorage)
 
-const params = {
+let params = {
   headers: {
     'content-type': 'application/json; charset=UTF-8'
   },

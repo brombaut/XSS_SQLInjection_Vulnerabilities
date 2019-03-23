@@ -1,10 +1,16 @@
 {
   "scripts": {
-    "dbinit": "mysql -u root < ./db/forum_init.sql"
+    "start": "node server.js",
+    "dbinit": "mysql -u root < ./db/forum_init.sql",
+    "test": "jest"
   },
   "dependencies": {
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "mysql": "^2.16.0"
+  },
+  "devDependencies": {
+    "jest": "^24.5.0",
+    "supertest": "^4.0.2"
   }
 }

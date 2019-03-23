@@ -1,3 +1,5 @@
 language: node_js
 node_js:
- - lts/* # Long Term Support
+  - lts/* # Long Term Support
+before_install:
+  - npm run dbinit

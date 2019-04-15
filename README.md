@@ -3,7 +3,7 @@ This is a simple web app that I build for a Software Security class peresentatio
 When a user logs in, they can refresh the page are able to remain logged in. This is accomplished by the user of the browsers built-in ‘local storage’ functionality. When the user first logs in, an identifying object is saved in the browser’s local storage. When the app is refreshed, it checks to see if there is an identifying object saved in local storage, and if there is, it retrieves the user’s information.
 
 ## XSS Attack
-The application is vulnerable to XSS attacks because it is not sanitizing the input when a user creates a new message. This is evident when the user creates a message that includes HTML tags, such as the <b> or <i> tag. This will change the way application renders the message.
+The application is vulnerable to XSS attacks because it is not sanitizing the input when a user creates a new message. This is evident when the user creates a message that includes HTML tags, such as the ```<b>``` or ```<i>``` tag. This will change the way application renders the message.
 Using this information, as well as the fact that the user remains logged into the application across page refreshes, we can build an attack to steal other users identifying information. If an attacker creates the following message with the content below, they will be able to see what local storage keys are currently in use by the application. Note that in order for this script to run, the attacker must refresh the page, since the browser will not execute script tags that get appended to the document once it has already been rendered.
 
 ```
